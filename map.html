@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Circles</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      // This example creates circles on the map, representing populations in North
+      // America.
+
+      // First, create an object containing LatLng and population for each city.
+      var safeZones = {
+        VDOC: {
+          center: {lat: 42.502, lng: -83.030}
+        },
+        SterlingHeights: {
+          center: {lat: 42.581, lng: -83.033}
+        },
+        warren: {
+          center: {lat: 42.517, lng: -83.039}
+        },
+        RoyalOak: {
+          center: {lat: 42.490, lng: -83.143}
+        }
+      };
+	  
+	  var crisisZones = {
+		tornado1: {
+			center: {lat: 42.535, lng: -83.077},
+			radius: 4000
+		}
+	  };
+
+	  var markers = [];
+	  var map;
+	  
+      function initMap() {
+        // Create the map.
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 12,
+          center: {lat: 42.517, lng: -83.039}
+        });
+		
+
+        // Construct the circle for each value in citymap.
+        // Note: We scale the area of the circle based on the population.
+        for (var crisisZone in crisisZones) {
+          // Add the circle for this city to the map.
+          var cityCircle = new google.maps.Circle({
+            strokeColor: '#FF0000',
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: '#FF0000',
+            fillOpacity: 0.35,
+            map: map,
+            center: crisisZones[crisisZone].center,
+            radius: crisisZones[crisisZone].radius
+          });
+        }
+		
+		drop();
+      }
+
+      function drop() {
+		clearMarkers();
+		
+		var i = 0;
+        for (var safeZone in safeZones) {
+          addMarkerWithTimeout(safeZones[safeZone].center, i * 200);
+		  i++;
+        }
+      }
+
+      function addMarkerWithTimeout(position, timeout) {
+        window.setTimeout(function() {
+          markers.push(new google.maps.Marker({
+            position: position,
+            map: map,
+            animation: google.maps.Animation.DROP
+          }));
+        }, timeout);
+      }
+	  
+	  function clearMarkers() {
+        for (var i = 0; i < markers.length; i++) {
+          markers[i].setMap(null);
+        }
+        markers = [];
+      }
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCZ_350eXpKBYLSaUUbzNTS9txkbkeVQcQ&callback=initMap">
+    </script>
+  </body>
+</html>
